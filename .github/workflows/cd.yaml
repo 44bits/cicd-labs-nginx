@@ -18,13 +18,13 @@ jobs:
     - name: Run 
       env:
         SERVICE_NAME: 54-180-128-102
-        IMAGE_NAME: raccoony/lightsail-nginx:${{ github.sha }}
+        IMAGE_NAME: ${{ secrets.DOCKERHUB_USERNAME }}/lightsail-nginx:${{ github.sha }}
       run: |
         echo $IMAGE_NAME:$IMAGE_TAG
         docker build -t $IMAGE_NAME .
         docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
         docker push $IMAGE_NAME
-        envsubst deployment.yaml >> deployment.yaml
+        envsubst < deployment.yaml.template > deployment.yaml
         curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
         unzip awscliv2.zip
         sudo ./aws/install
