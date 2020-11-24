@@ -17,13 +17,12 @@ jobs:
         aws-region: ap-northeast-2
     - name: Run 
       env:
-        SERVICE_NAME: 54-180-128-102  # 자신의 서비스 이름으로 변경합니다.
-        IMAGE_NAME: raccoony/lightsail-nginx  # 도커 허브 아이디를 넣습니다.
-        IMAGE_TAG: ${{ github.sha }}
+        SERVICE_NAME: 54-180-128-102
+        IMAGE_NAME: raccoony/lightsail-nginx:${{ github.sha }}
       run: |
         echo $IMAGE_NAME:$IMAGE_TAG
-        docker build -t $IMAGE_NAME:$IMAGE_TAG .
+        docker build -t $IMAGE_NAME .
         docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
-        docker push $IMAGE_NAME:$IMAGE_TAG
-        sed -i '' "s/IMAGE_NAME_AND_TAG/${IMAGE_NAME}:${IMAGE_TAG}/g" deployment.yaml
+        docker push $IMAGE_NAME
+        sed -i '' "s/IMAGE_NAME_AND_TAG/${IMAGE_NAME}/g" deployment.yaml
         aws lightsail create-container-service-deployment --service-name $SERVICE_NAME --cli-input-yaml file://deployment.yaml
