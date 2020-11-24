@@ -25,4 +25,7 @@ jobs:
         docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
         docker push $IMAGE_NAME
         envsubst deployment.yaml
+        curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+        unzip awscliv2.zip
+        sudo ./aws/install
         aws lightsail create-container-service-deployment --service-name $SERVICE_NAME --cli-input-yaml file://deployment.yaml
