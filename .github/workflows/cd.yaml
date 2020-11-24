@@ -1,0 +1,28 @@
+name: Continuous Deployment with Docker Container
+
+on: [push]
+
+jobs:
+  deploy:
+    name: Docker Deployment
+    runs-on: ubuntu-18.04
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ap-northeast-2
+    - name: Run 
+      env:
+        SERVICE_NAME: 54-180-128-102  # 자신의 서비스 이름으로 변경합니다.
+        IMAGE_NAME: raccoony/lightsail-nginx  # 도커 허브 아이디를 넣습니다.
+        IMAGE_TAG: ${{ github.sha }}
+      run: |
+        docker build -t $IMAGE_NAME:$IMAGE_TAG .
+        docker push $IMAGE_NAME:$IMAGE_TAG
+        echo $IMAGE_NAME:$IMAGE_TAG
+        sed "s/IMAGE_NAME_AND_TAG/${IMAGE_NAME}:${IMAGE_TAG}/g" >> deployment.yaml
+        aws lightsail create-container-service-deployment --service-name $SERVICE_NAME --cli-input-yaml file://deployment.yaml

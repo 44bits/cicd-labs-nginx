@@ -1,0 +1,9 @@
+serviceName: '54-180-128-102'
+containers:
+  nginx:
+    image: 'IMAGE_NAME_AND_TAG'
+    ports:
+      '80': 'HTTP'
+publicEndpoint:
+  containerName: 'nginx'
+  containerPort: 80
