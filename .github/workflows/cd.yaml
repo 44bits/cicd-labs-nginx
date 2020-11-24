@@ -24,5 +24,5 @@ jobs:
         docker build -t $IMAGE_NAME .
         docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
         docker push $IMAGE_NAME
-        sed -i '' "s/IMAGE_NAME_AND_TAG/${IMAGE_NAME}/g" deployment.yaml
+        envsubst deployment.yaml
         aws lightsail create-container-service-deployment --service-name $SERVICE_NAME --cli-input-yaml file://deployment.yaml
