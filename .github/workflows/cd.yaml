@@ -21,8 +21,9 @@ jobs:
         IMAGE_NAME: raccoony/lightsail-nginx  # 도커 허브 아이디를 넣습니다.
         IMAGE_TAG: ${{ github.sha }}
       run: |
-        docker build -t $IMAGE_NAME:$IMAGE_TAG .
-        docker push $IMAGE_NAME:$IMAGE_TAG
         echo $IMAGE_NAME:$IMAGE_TAG
+        docker build -t $IMAGE_NAME:$IMAGE_TAG .
+        docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
+        docker push $IMAGE_NAME:$IMAGE_TAG
         sed "s/IMAGE_NAME_AND_TAG/${IMAGE_NAME}:${IMAGE_TAG}/g" >> deployment.yaml
         aws lightsail create-container-service-deployment --service-name $SERVICE_NAME --cli-input-yaml file://deployment.yaml
